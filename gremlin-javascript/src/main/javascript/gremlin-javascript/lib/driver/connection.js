@@ -31,6 +31,8 @@ const ResultSet = require('./result-set');
 const ResponseError = require('./response-error');
 const Bytecode = require('../process/bytecode');
 
+var BIGNUMBER_JSON = require('json-bigint');
+
 const responseStatusCode = {
   success: 200,
   noContent: 204,
@@ -169,6 +171,7 @@ class Connection extends EventEmitter {
         };
       }
 
+      console.log("debug0: ", JSON.stringify(this._getRequest(rid, op, args, processor)));
       const message = Buffer.from(this._header + JSON.stringify(this._getRequest(rid, op, args, processor)));
       this._ws.send(message);
     }));
@@ -247,7 +250,8 @@ class Connection extends EventEmitter {
   }
 
   _handleMessage(data) {
-    const response = this._reader.read(JSON.parse(data.toString()));
+    const response = this._reader.read(BIGNUMBER_JSON.parse(data.toString()));
+    // const response = this._reader.read(JSON.parse(data.toString()));
     if (response.requestId === null || response.requestId === undefined) {
       // There was a serialization issue on the server that prevented the parsing of the request id
       // We invoke any of the pending handlers with an error
@@ -299,8 +303,7 @@ class Connection extends EventEmitter {
       default:
         if (handler.result) {
           handler.result.push.apply(handler.result, response.result.data);
-        }
-        else {
+        } else {
           handler.result = response.result.data;
         }
         this._clearHandler(response.requestId);
