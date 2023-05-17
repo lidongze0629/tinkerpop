@@ -171,7 +171,7 @@ class Connection extends EventEmitter {
         };
       }
 
-      console.log("debug0: ", JSON.stringify(this._getRequest(rid, op, args, processor)));
+      // console.log("debug0: ", JSON.stringify(this._getRequest(rid, op, args, processor)));
       const message = Buffer.from(this._header + JSON.stringify(this._getRequest(rid, op, args, processor)));
       this._ws.send(message);
     }));
